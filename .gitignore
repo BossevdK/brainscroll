@@ -39,3 +39,12 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# data script cache
+scripts/.cache/
+
+# signing key: never commit
+sleutel/
+*.jks
+*.keystore
+keystore.properties
