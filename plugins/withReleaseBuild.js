@@ -1,7 +1,16 @@
 // Expo config plugin for the local release build (survives `expo prebuild --clean`):
 // - signs release APKs with the key in ../sleutel (keystore.properties + .jks, never in git)
 // - builds only for arm64 phones (every modern Android/Samsung) → smaller APK, faster build
-const { withAppBuildGradle, withGradleProperties } = require('expo/config-plugins');
+// - writes local.properties for the tools in F:\android-tools
+const fs = require('fs');
+const path = require('path');
+const { withAppBuildGradle, withDangerousMod, withGradleProperties } = require('expo/config-plugins');
+
+const LOCAL_PROPERTIES = [
+  'sdk.dir=F\\:\\\\android-tools\\\\sdk',
+  'cmake.dir=F\\:\\\\android-tools\\\\sdk\\\\cmake\\\\3.31.6',
+  '',
+].join('\n');
 
 const MARKER = '// brainscroll-release-signing';
 const SIGNING = `
@@ -33,5 +42,14 @@ module.exports = function withReleaseBuild(config) {
     c.modResults = props;
     return c;
   });
+  // local.properties: SDK location + CMake 3.31.6 (its ninja handles Windows paths > 260 chars).
+  config = withDangerousMod(config, [
+    'android',
+    (c) => {
+      const file = path.join(c.modRequest.platformProjectRoot, 'local.properties');
+      fs.writeFileSync(file, LOCAL_PROPERTIES);
+      return c;
+    },
+  ]);
   return config;
 };

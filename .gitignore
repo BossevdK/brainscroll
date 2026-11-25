@@ -48,3 +48,4 @@ sleutel/
 *.jks
 *.keystore
 keystore.properties
+build.log
