@@ -49,3 +49,4 @@ sleutel/
 *.keystore
 keystore.properties
 build.log
+release/
